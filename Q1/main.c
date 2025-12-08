@@ -4,4 +4,5 @@
 int main(){
 	display_welcome_prompt();
 	display_regular_prompt();
+	return 0;
 }
