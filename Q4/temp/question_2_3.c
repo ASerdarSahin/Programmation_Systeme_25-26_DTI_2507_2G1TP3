@@ -26,6 +26,7 @@ void execute_one_simple_command(){
 
 	pid_t pid = fork();
 	if (pid == 0) {
+		setpgid(0,0);
 		execlp(buffer, buffer, NULL);
 		_exit(1);
 	} else if (pid > 0) {
