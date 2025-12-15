@@ -21,17 +21,19 @@ void execute_simple_command(char *buffer)
     int status;
     struct timespec start, end;
 
+    char **args = parse_arguments(buffer);
+
+    /* Ligne vide -> on ne fait rien */
+    if (args == NULL || args[0] == NULL)
+        return;
+
     clock_gettime(CLOCK_MONOTONIC, &start);
 
     pid = fork();
 
     if (pid == 0)
     {
-        char **args = parse_arguments(buffer);
-        if (args == NULL)
-            _exit(0);
-
-	handle_redirections(args);
+        handle_redirections(args);
         execvp(args[0], args);
         _exit(1);
     }
@@ -43,7 +45,7 @@ void execute_simple_command(char *buffer)
         long time_ms = compute_time_ms(start, end);
 
         char msg[64];
-        int len;
+        int len = 0;
 
         if (WIFEXITED(status))
         {
@@ -57,6 +59,7 @@ void execute_simple_command(char *buffer)
                            "[sign:%d|%ldms] ",
                            WTERMSIG(status), time_ms);
         }
+
         write(STDOUT_FILENO, msg, len);
     }
 }
